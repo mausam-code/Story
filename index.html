@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Our Love Story</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    text-align:center;
+    background:linear-gradient(120deg,#ff9a9e,#fad0c4);
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.container{
+    background:white;
+    padding:40px;
+    border-radius:15px;
+    width:80%;
+    max-width:500px;
+    box-shadow:0 10px 20px rgba(0,0,0,0.2);
+}
+
+button{
+    margin-top:20px;
+    padding:12px 20px;
+    font-size:16px;
+    border:none;
+    border-radius:8px;
+    background:#ff4d6d;
+    color:white;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#ff1e4d;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+<h1>Our Love Story ❤️</h1>
+
+<p id="story">
+It all started with a simple hello...
+</p>
+
+<button onclick="nextStory()">Next Chapter</button>
+</div>
+
+<script>
+const story = [
+"It all started with a simple hello...",
+"We became friends and talked every night.",
+"Our hearts slowly connected.",
+"Then we realized it was love ❤️",
+"And our story continues forever..."
+];
+
+let index = 0;
+
+function nextStory(){
+index++;
+
+if(index < story.length){
+document.getElementById("story").innerText = story[index];
+}
+else{
+document.getElementById("story").innerText = "The story never ends 💞";
+}
+}
+</script>
+
+</body>
+</html>
