@@ -1,82 +1,478 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Our Love Story</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Our Story ❤️</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet">
 <style>
-body{
-    margin:0;
-    font-family:Arial;
-    text-align:center;
-    background:linear-gradient(120deg,#ff9a9e,#fad0c4);
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-.container{
-    background:white;
-    padding:40px;
-    border-radius:15px;
-    width:80%;
-    max-width:500px;
-    box-shadow:0 10px 20px rgba(0,0,0,0.2);
-}
+  :root {
+    --rose: #e8637a;
+    --blush: #f4a7b3;
+    --gold: #d4a56a;
+    --cream: rgba(255,245,235,0.92);
+    --glass: rgba(10,5,15,0.45);
+  }
 
-button{
-    margin-top:20px;
-    padding:12px 20px;
-    font-size:16px;
-    border:none;
-    border-radius:8px;
-    background:#ff4d6d;
-    color:white;
-    cursor:pointer;
-}
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: #0a0510;
+    font-family: 'Cormorant Garamond', serif;
+    cursor: default;
+  }
 
-button:hover{
-    background:#ff1e4d;
-}
+  /* ── Particle canvas ── */
+  #particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+  /* ── Slideshow ── */
+  .story { position: fixed; inset: 0; z-index: 1; }
+
+  .slide {
+    position: absolute; inset: 0;
+    opacity: 0; transition: opacity 1.2s ease;
+    will-change: opacity;
+  }
+  .slide.active { opacity: 1; }
+
+  .slide img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: brightness(0.55) saturate(1.1);
+  }
+
+  /* ── Vignette overlay ── */
+  .slide::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(5,2,10,0.72) 100%);
+    pointer-events: none;
+  }
+
+  /* ── Placeholder gradient when no image ── */
+  .slide.placeholder img { display: none; }
+  .slide.placeholder {
+    background: linear-gradient(135deg, #1a0520 0%, #2d0b30 40%, #0d0515 100%);
+  }
+
+  /* ── Top title ── */
+  .top-title {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 20;
+    text-align: center;
+    padding: 22px 20px 16px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(20px, 4vw, 30px);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--cream);
+    letter-spacing: 0.12em;
+    background: linear-gradient(to bottom, rgba(5,2,10,0.8) 0%, transparent 100%);
+  }
+
+  /* ── Progress bar ── */
+  #progress {
+    position: fixed; top: 0; left: 0;
+    height: 2px; width: 0%;
+    background: linear-gradient(90deg, var(--rose), var(--gold));
+    z-index: 30;
+    transition: width linear;
+  }
+
+  /* ── Quote ── */
+  .quote-wrap {
+    position: fixed;
+    bottom: 110px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    width: min(680px, 88vw);
+    text-align: center;
+    pointer-events: none;
+  }
+  .quote-text {
+    display: inline-block;
+    font-size: clamp(18px, 3.5vw, 28px);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--cream);
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+    text-shadow: 0 2px 24px rgba(0,0,0,0.9), 0 0 40px rgba(232,99,122,0.25);
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.7s 0.5s ease, transform 0.7s 0.5s ease;
+  }
+  .slide.active ~ .quote-wrap .quote-text,
+  .quote-text.show { opacity: 1; transform: translateY(0); }
+
+  /* ── Slide counter ── */
+  .counter {
+    position: fixed; bottom: 118px; right: 28px;
+    z-index: 20;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px; font-weight: 200;
+    color: rgba(255,245,235,0.45);
+    letter-spacing: 0.18em;
+  }
+
+  /* ── Like button ── */
+  .like-btn {
+    position: fixed;
+    bottom: 32px; right: 28px;
+    z-index: 20;
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(232,99,122,0.3);
+    border-radius: 50px;
+    padding: 10px 20px;
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.1s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .like-btn:hover { border-color: var(--rose); background: rgba(232,99,122,0.12); }
+  .like-btn:active { transform: scale(0.93); }
+  .like-btn .heart-icon { font-size: 22px; display: inline-block; transition: transform 0.15s; }
+  .like-btn.pop .heart-icon { animation: heartPop 0.35s ease; }
+  @keyframes heartPop {
+    0%  { transform: scale(1); }
+    40% { transform: scale(1.55); }
+    70% { transform: scale(0.88); }
+    100%{ transform: scale(1); }
+  }
+  .like-btn .like-count {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px; font-weight: 300;
+    color: var(--blush);
+    min-width: 20px;
+    transition: opacity 0.2s;
+  }
+
+  /* ── Floating heart burst ── */
+  .burst-heart {
+    position: fixed;
+    font-size: 20px;
+    pointer-events: none;
+    z-index: 100;
+    animation: burstFly 1.1s ease-out forwards;
+    opacity: 1;
+  }
+  @keyframes burstFly {
+    0%   { opacity: 1; transform: translate(0,0) scale(1) rotate(var(--r)); }
+    80%  { opacity: 0.7; }
+    100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.3) rotate(var(--r2)); }
+  }
+
+  /* ── Nav arrows ── */
+  .nav {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    z-index: 20;
+    font-size: 36px; color: rgba(255,245,235,0.45);
+    cursor: pointer; padding: 16px;
+    transition: color 0.2s, transform 0.2s;
+    user-select: none;
+  }
+  .nav:hover { color: var(--cream); transform: translateY(-50%) scale(1.15); }
+  .nav.prev { left: 10px; }
+  .nav.next { right: 10px; }
+
+  /* ── Dot indicators ── */
+  .dots {
+    position: fixed; bottom: 40px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex; gap: 6px;
+    flex-wrap: wrap; justify-content: center;
+    max-width: 300px;
+  }
+  .dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(255,245,235,0.25);
+    transition: background 0.4s, transform 0.4s;
+    cursor: pointer;
+  }
+  .dot.active { background: var(--rose); transform: scale(1.5); }
+
+  /* ── Touch swipe visual ── */
+  .swipe-hint {
+    position: fixed; bottom: 78px; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px; font-weight: 200;
+    color: rgba(255,245,235,0.28);
+    letter-spacing: 0.22em;
+    z-index: 20;
+    animation: fadeHint 3s 2s ease forwards;
+  }
+  @keyframes fadeHint { 0%{opacity:1} 100%{opacity:0} }
+
+  /* ── Opening animation ── */
+  @keyframes fadeInDown {
+    from { opacity:0; transform: translateY(-20px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+  .top-title { animation: fadeInDown 1.4s 0.3s ease both; }
 </style>
-
 </head>
-
 <body>
 
-<div class="container">
-<h1>Our Love Story ❤️</h1>
+<canvas id="particles"></canvas>
+<div id="progress"></div>
 
-<p id="story">
-It all started with a simple hello...
-</p>
+<div class="top-title">Our Story ❤️</div>
 
-<button onclick="nextStory()">Next Chapter</button>
+<div class="story" id="story"></div>
+
+<div class="quote-wrap">
+  <span class="quote-text" id="quoteText"></span>
 </div>
 
+<div class="counter" id="counter"></div>
+
+<div class="nav prev" id="prevBtn">❮</div>
+<div class="nav next" id="nextBtn">❯</div>
+
+<div class="like-btn" id="likeBtn">
+  <span class="heart-icon">❤️</span>
+  <span class="like-count" id="likeCount">0</span>
+</div>
+
+<div class="dots" id="dots"></div>
+<div class="swipe-hint">SWIPE TO EXPLORE</div>
+
 <script>
-const story = [
-"It all started with a simple hello...",
-"We became friends and talked every night.",
-"Our hearts slowly connected.",
-"Then we realized it was love ❤️",
-"And our story continues forever..."
+// ── Data ──────────────────────────────────────────────────────────────
+const slides = [
+  { src:"images/IMG20260309193854.jpg",  quote:"Every love story starts with a moment." },
+  { src:"images/IMG20260309212355.jpg",  quote:"Then suddenly that moment becomes everything." },
+  { src:"images/IMG20260309212528.jpg",  quote:"You slowly become someone unforgettable." },
+  { src:"images/IMG20260309212831.jpg",  quote:"Every memory becomes brighter with you." },
+  { src:"images/IMG20260309220807.jpg",  quote:"Somewhere between laughter and silence." },
+  { src:"images/IMG20260309220808.jpg",  quote:"Our hearts found their home." },
+  { src:"images/IMG20260310190852.jpg",  quote:"Moments turned into memories." },
+  { src:"images/IMG20260311184346.jpg",  quote:"Memories turned into love." },
+  { src:"images/IMG20260311203846.jpg",  quote:"And love became our story." },
+  { src:"images/IMG20260311203935.jpg",  quote:"A story still being written." },
+  { src:"images/IMG20260313184930.jpg",  quote:"With every smile." },
+  { src:"images/IMG20260313185007.jpg",  quote:"Every adventure." },
+  { src:"images/IMG20260313185045.jpg",  quote:"Every small moment." },
+  { src:"images/IMG20260313200144.jpg",  quote:"Together." },
+  { src:"images/IMG20260313200301.jpg",  quote:"Because love isn't perfect." },
+  { src:"images/IMG20260313200310.jpg",  quote:"But with you it feels right." },
+  { src:"images/IMG20260313200330.jpg",  quote:"You became my favorite place." },
+  { src:"images/IMG20260313200334.jpg",  quote:"My calm." },
+  { src:"images/IMG20260313200338.jpg",  quote:"My happiness." },
+  { src:"images/IMG20260313200511.jpg",  quote:"My forever." },
+  { src:"images/IMG20260313200522.jpg",  quote:"And I would choose you." },
+  { src:"images/IMG20260314184038.jpg",  quote:"Again." },
+  { src:"images/IMG20260314184101.jpg",  quote:"And again." },
+  { src:"images/IMG_5491.JPG",           quote:"Because loving you." },
+  { src:"images/IMG_5492.JPG",           quote:"Is the best story." },
+  { src:"images/IMG_5493.JPG",           quote:"I will ever live." },
+  { src:"images/IMG_5494.JPG",           quote:"Our story." },
+  { src:"images/IMG_5495.JPG",           quote:"Our memories." },
+  { src:"images/IMG_5512.JPG",           quote:"Our love." },
+  { src:"images/IMG_5516.JPG",           quote:"And our forever." },
+  { src:"images/IMG_5519.JPG",           quote:"Because loving you is my favorite story ❤️" },
 ];
 
-let index = 0;
+const INTERVAL = 6000;
 
-function nextStory(){
-index++;
+// ── Build slides ──────────────────────────────────────────────────────
+const story = document.getElementById('story');
+const dotsEl = document.getElementById('dots');
 
-if(index < story.length){
-document.getElementById("story").innerText = story[index];
+slides.forEach((d, i) => {
+  const div = document.createElement('div');
+  div.className = 'slide' + (i === 0 ? ' active' : '');
+  div.dataset.index = i;
+  const img = document.createElement('img');
+  img.src = d.src;
+  img.alt = '';
+  img.loading = i < 3 ? 'eager' : 'lazy';
+  img.onerror = () => div.classList.add('placeholder');
+  div.appendChild(img);
+  story.appendChild(div);
+
+  const dot = document.createElement('div');
+  dot.className = 'dot' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goTo(i));
+  dotsEl.appendChild(dot);
+});
+
+const slideEls = document.querySelectorAll('.slide');
+const dotEls   = document.querySelectorAll('.dot');
+
+// ── State ─────────────────────────────────────────────────────────────
+let current = 0;
+let timer;
+let likes = 0;
+
+// Restore total likes
+likes = parseInt(localStorage.getItem('loveStory_totalLikes') || '0');
+document.getElementById('likeCount').textContent = likes;
+
+// ── Navigation ────────────────────────────────────────────────────────
+function goTo(n) {
+  slideEls[current].classList.remove('active');
+  dotEls[current].classList.remove('active');
+  current = (n + slides.length) % slides.length;
+  slideEls[current].classList.add('active');
+  dotEls[current].classList.add('active');
+  updateQuote();
+  updateCounter();
+  resetTimer();
 }
-else{
-document.getElementById("story").innerText = "The story never ends 💞";
+
+function updateQuote() {
+  const qt = document.getElementById('quoteText');
+  qt.classList.remove('show');
+  void qt.offsetWidth; // reflow
+  qt.textContent = slides[current].quote;
+  requestAnimationFrame(() => qt.classList.add('show'));
 }
+
+function updateCounter() {
+  document.getElementById('counter').textContent =
+    String(current + 1).padStart(2,'0') + ' / ' + String(slides.length).padStart(2,'0');
 }
+
+function resetTimer() {
+  clearInterval(timer);
+  startProgress();
+  timer = setInterval(() => goTo(current + 1), INTERVAL);
+}
+
+// ── Progress bar ──────────────────────────────────────────────────────
+let progressStart;
+let progressRaf;
+function startProgress() {
+  const bar = document.getElementById('progress');
+  bar.style.transition = 'none';
+  bar.style.width = '0%';
+  void bar.offsetWidth;
+  progressStart = performance.now();
+  cancelAnimationFrame(progressRaf);
+  function frame(ts) {
+    const pct = Math.min(100, ((ts - progressStart) / INTERVAL) * 100);
+    bar.style.width = pct + '%';
+    if (pct < 100) progressRaf = requestAnimationFrame(frame);
+  }
+  progressRaf = requestAnimationFrame(frame);
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') goTo(current + 1);
+  if (e.key === 'ArrowLeft')  goTo(current - 1);
+});
+
+// ── Touch swipe ───────────────────────────────────────────────────────
+let touchX = null;
+document.addEventListener('touchstart', e => { touchX = e.changedTouches[0].clientX; }, { passive: true });
+document.addEventListener('touchend', e => {
+  if (touchX === null) return;
+  const dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 40) goTo(current + (dx < 0 ? 1 : -1));
+  touchX = null;
+}, { passive: true });
+
+// ── Like with burst animation ─────────────────────────────────────────
+const likeBtn = document.getElementById('likeBtn');
+const likeCount = document.getElementById('likeCount');
+
+likeBtn.addEventListener('click', function(e) {
+  likes++;
+  localStorage.setItem('loveStory_totalLikes', likes);
+  likeCount.textContent = likes;
+
+  // Pop animation
+  this.classList.remove('pop');
+  void this.offsetWidth;
+  this.classList.add('pop');
+
+  // Burst hearts
+  spawnBurst(e.clientX, e.clientY);
+});
+
+const HEARTS = ['❤️','🩷','💕','💗','💖','💓','✨'];
+function spawnBurst(cx, cy) {
+  const count = 6 + Math.floor(Math.random() * 5);
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('span');
+    el.className = 'burst-heart';
+    el.textContent = HEARTS[Math.floor(Math.random() * HEARTS.length)];
+    const angle = (Math.random() * 360);
+    const dist  = 60 + Math.random() * 120;
+    const tx = Math.cos(angle * Math.PI/180) * dist;
+    const ty = Math.sin(angle * Math.PI/180) * dist - 40;
+    const rot  = (Math.random() - 0.5) * 60;
+    const rot2 = rot + (Math.random() - 0.5) * 80;
+    const size = 14 + Math.random() * 18;
+    el.style.cssText = `
+      left:${cx - 12}px; top:${cy - 12}px;
+      font-size:${size}px;
+      --tx:${tx}px; --ty:${ty}px;
+      --r:${rot}deg; --r2:${rot2}deg;
+      animation-duration:${0.8 + Math.random() * 0.6}s;
+      animation-delay:${Math.random() * 0.08}s;
+    `;
+    document.body.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+}
+
+// ── Ambient particle canvas ───────────────────────────────────────────
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H;
+const pts = [];
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+for (let i = 0; i < 55; i++) {
+  pts.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: 0.6 + Math.random() * 1.4,
+    vx: (Math.random() - 0.5) * 0.18,
+    vy: (Math.random() - 0.5) * 0.18,
+    a: Math.random(),
+    da: 0.003 + Math.random() * 0.004,
+  });
+}
+
+function drawParticles() {
+  ctx.clearRect(0, 0, W, H);
+  pts.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    p.a += p.da;
+    if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+    if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+    const alpha = (Math.sin(p.a) * 0.5 + 0.5) * 0.5;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(232,99,122,${alpha})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+// ── Init ──────────────────────────────────────────────────────────────
+updateQuote();
+updateCounter();
+resetTimer();
 </script>
-
 </body>
 </html>
